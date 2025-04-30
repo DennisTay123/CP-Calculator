@@ -21,7 +21,7 @@ You can use the live version of the app via GitHub Pages:
 https://dennistay123.github.io/CP-Calculator/
 
 ## 💡 Why This Design?
-This application is intentionally designed to be a single-page and dependency-free tool for ease of deployment on GitHub Pages or any other static hosting platform. All logic is handled via vanilla JavaScript, and the UI is powered by plain HTML and CSS—no frameworks required.
+This application is intentionally designed to be a single-page and dependency-free tool for ease of deployment on GitHub Pages or any other static hosting platform. All logic is handled via JavaScript, and the UI is powered by plain HTML and CSS so no frameworks required.
 
 ## 🛠️ Future Improvements
 - Export results to CSV or PDF
