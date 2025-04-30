@@ -15,16 +15,21 @@
       --color-button-dark: #343a40;
       --color-best-light: #d4edda;
       --color-best-dark: #30543e;
+      --color-collapse-light: #555;
+      --color-collapse-dark: #3ddc84;
+      --color-free-light: #fff3cd;
+      --color-free-dark: #665c00;
     }
 
     body.dark {
       --color-bg: #121212;
       --color-text: #f2f2f2;
-      --color-card: #1e1e1e;
+      --color-card: #1a1a1a;
       --color-button-primary: #339aff;
       --color-button-secondary: #3ddc84;
       --color-button-danger: #ff6b6b;
       --color-button-dark: #f8f9fa;
+      --color-collapse-dark: #3ddc84;
     }
 
     body {
@@ -106,6 +111,14 @@
       background-color: var(--color-best-dark);
     }
 
+    .free {
+      background-color: var(--color-free-light);
+    }
+
+    body.dark .free {
+      background-color: var(--color-free-dark);
+    }
+
     .button-bar {
       margin-top: 1rem;
       display: flex;
@@ -136,11 +149,11 @@
     }
 
     .collapse-btn {
-      background: var(--color-button-dark);
+      background: var(--color-collapse-light);
     }
 
     body.dark .collapse-btn {
-      background: var(--color-button-secondary);
+      background: var(--color-collapse-dark);
     }
 
     .toggle-mode-btn {
@@ -168,15 +181,16 @@
 
       td {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
         padding: 0.4rem;
       }
 
       td::before {
         content: attr(data-label);
         font-weight: bold;
-        margin-right: 1rem;
+        margin-bottom: 0.3rem;
+        display: inline-block;
       }
     }
   </style>
@@ -218,10 +232,10 @@
               <tr>
                 <th>#</th>
                 <th>Product</th>
-                <th>Price</th>
+                <th>Cost</th>
                 <th>Unit</th>
                 <th>Unit Type</th>
-                <th>Value</th>
+                <th>CP Value</th>
                 <th></th>
               </tr>
             </thead>
@@ -237,15 +251,19 @@
       addRow(wrapper.querySelector(".add-product-btn"));
     }
 
+    function parseInput(value) {
+      return parseFloat(value.replace(',', '.'));
+    }
+
     function addRow(button) {
       const tbody = button.closest(".category-card").querySelector("tbody");
       const row = document.createElement("tr");
 
       row.innerHTML = `
-        <td data-label="#" class="drag-handle" draggable="true">⇅</td>
+        <td data-label="#">${tbody.children.length + 1}</td>
         <td data-label="Product"><input type="text" /></td>
-        <td data-label="Price"><input type="number" min="0" step="0.01" /></td>
-        <td data-label="Unit"><input type="number" min="0.01" step="0.01" /></td>
+        <td data-label="Cost"><input type="text" /></td>
+        <td data-label="Unit"><input type="text" /></td>
         <td data-label="Unit Type">
           <select>
             <option value="pcs">pcs</option>
@@ -256,7 +274,7 @@
             <option value="other">other</option>
           </select>
         </td>
-        <td data-label="Value" class="valueCell">-</td>
+        <td data-label="CP Value" class="valueCell">-</td>
         <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>
       `;
 
@@ -266,7 +284,6 @@
         el.addEventListener("input", () => updateValues(tbody));
       });
 
-      enableDrag(tbody);
       updateValues(tbody);
     }
 
@@ -284,20 +301,24 @@
 
     function updateValues(tbody) {
       const rows = Array.from(tbody.querySelectorAll("tr"));
-      let minValue = Infinity;
-
       rows.forEach((row, index) => {
-        const price = parseFloat(row.cells[2].querySelector("input").value);
-        const unit = parseFloat(row.cells[3].querySelector("input").value);
+        row.cells[0].textContent = index + 1;
+        row.classList.remove("best", "free");
+
+        const price = parseInput(row.cells[2].querySelector("input").value);
+        const unit = parseInput(row.cells[3].querySelector("input").value);
         const unitType = row.cells[4].querySelector("select").value;
         const valueCell = row.querySelector(".valueCell");
-
-        row.classList.remove("best");
 
         let value = null;
         if (!isNaN(price) && !isNaN(unit) && unit > 0) {
           value = price / unit;
-          valueCell.textContent = `${value.toFixed(4)} / ${unitType}`;
+          if (value === 0) {
+            row.classList.add("free");
+            valueCell.textContent = "free";
+          } else {
+            valueCell.textContent = `${value.toFixed(4)} / ${unitType}`;
+          }
         } else {
           valueCell.textContent = "-";
         }
@@ -305,7 +326,7 @@
         row.dataset.value = value;
       });
 
-      const validRows = rows.filter(row => row.dataset.value !== "null");
+      const validRows = rows.filter(row => row.dataset.value !== "null" && row.dataset.value !== "0");
       if (!validRows.length) return;
 
       const min = Math.min(...validRows.map(row => parseFloat(row.dataset.value)));
@@ -327,46 +348,6 @@
         tableSection.style.display = "none";
         button.textContent = "Expand";
       }
-    }
-
-    function enableDrag(tbody) {
-      let draggingRow = null;
-
-      tbody.querySelectorAll(".drag-handle").forEach(handle => {
-        handle.addEventListener("dragstart", (e) => {
-          draggingRow = e.target.closest("tr");
-          e.dataTransfer.effectAllowed = "move";
-          e.dataTransfer.setData('text/plain', '');
-        });
-      });
-
-      tbody.querySelectorAll("tr").forEach(row => {
-        row.addEventListener("dragover", (e) => {
-          e.preventDefault();
-          const target = e.target.closest("tr");
-          if (target && target !== draggingRow && target.parentNode === draggingRow.parentNode) {
-            const rect = target.getBoundingClientRect();
-            const offset = rect.y + rect.height / 2;
-            if (e.clientY > offset) {
-              target.after(draggingRow);
-            } else {
-              target.before(draggingRow);
-            }
-
-            // Auto-scroll
-            const scrollThreshold = 50;
-            if (e.clientY < scrollThreshold) {
-              window.scrollBy(0, -10);
-            } else if (window.innerHeight - e.clientY < scrollThreshold) {
-              window.scrollBy(0, 10);
-            }
-          }
-        });
-
-        row.addEventListener("dragend", () => {
-          updateValues(tbody);
-        });
-      });
     }
 
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
