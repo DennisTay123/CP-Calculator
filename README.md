@@ -17,14 +17,12 @@ This tool is ideal for consumers and budget-conscious users who want to quickly 
 - 🚀 **Deployable to GitHub Pages**: Purposefully built as a standalone HTML/CSS/JS web app, making it ideal for static site hosting platforms like GitHub Pages.
 
 ## 🚀 Getting Started
-
-### View Online
 You can use the live version of the app via GitHub Pages:
 https://dennistay123.github.io/CP-Calculator/
 
-##💡 Why This Design?
+## 💡 Why This Design?
 This application is intentionally designed to be a single-page and dependency-free tool for ease of deployment on GitHub Pages or any other static hosting platform. All logic is handled via vanilla JavaScript, and the UI is powered by plain HTML and CSS—no frameworks required.
 
-##🛠️ Future Improvements
+## 🛠️ Future Improvements
 - Export results to CSV or PDF
 - Sort products by CP automatically
