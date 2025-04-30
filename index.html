@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>性价比 Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #f8f9fa;
+    }
+    h1 {
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    th {
+      background-color: #e9ecef;
+    }
+    .best {
+      background-color: #d4edda;
+    }
+    button {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>CP Calculator (Cost Performance)</h1>
+
+  <table id="productTable">
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Price</th>
+        <th>Unit</th>
+        <th>Unit Type</th>
+        <th>Value (Price per Unit)</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- Rows inserted dynamically -->
+    </tbody>
+  </table>
+
+  <button onclick="addRow()">Add Product</button>
+
+  <script>
+    function addRow(name = '', price = '', unit = '', unitType = '') {
+      const table = document.getElementById('tableBody');
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+        <td><input type="text" value="${name}" placeholder="e.g. Product A" /></td>
+        <td><input type="number" value="${price}" step="0.01" min="0" /></td>
+        <td><input type="number" value="${unit}" step="0.01" min="0.01" /></td>
+        <td>
+          <select>
+            <option value="pcs">pcs</option>
+            <option value="g">g</option>
+            <option value="kg">kg</option>
+            <option value="ml">ml</option>
+            <option value="l">l</option>
+            <option value="other">other</option>
+          </select>
+        </td>
+        <td class="valueCell">-</td>
+        <td><button onclick="removeRow(this)">✖</button></td>
+      `;
+
+      table.appendChild(row);
+
+      const inputs = row.querySelectorAll('input, select');
+      inputs.forEach(input => input.addEventListener('input', updateValues));
+    }
+
+    function removeRow(button) {
+      const row = button.parentElement.parentElement;
+      row.remove();
+      updateValues();
+    }
+
+    function updateValues() {
+      const rows = document.querySelectorAll('#tableBody tr');
+      let minValue = Infinity;
+      let bestRow = null;
+
+      rows.forEach(row => {
+        const price = parseFloat(row.cells[1].querySelector('input').value);
+        const unit = parseFloat(row.cells[2].querySelector('input').value);
+        const valueCell = row.querySelector('.valueCell');
+
+        let value = '-';
+
+        if (!isNaN(price) && !isNaN(unit) && unit > 0) {
+          value = (price / unit).toFixed(4);
+          if (value < minValue) {
+            minValue = value;
+            bestRow = row;
+          }
+        }
+
+        valueCell.textContent = value;
+        row.classList.remove('best');
+      });
+
+      if (bestRow) bestRow.classList.add('best');
+    }
+
+    // Add one initial row
+    addRow();
+  </script>
+</body>
+</html>
