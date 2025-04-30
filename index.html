@@ -28,17 +28,24 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       margin: 1rem 0;
       padding: 1rem;
+      overflow: hidden;
     }
 
     .category-card h2 {
       margin-top: 0;
       color: #444;
       font-size: 1.25rem;
+      cursor: pointer;
     }
 
-    table {
+    .category-card table {
       width: 100%;
       border-collapse: collapse;
+      display: none;
+    }
+
+    .category-card.open table {
+      display: table;
     }
 
     th, td {
@@ -131,6 +138,26 @@
         justify-content: flex-end;
       }
     }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #333;
+        color: #ddd;
+      }
+
+      .category-card {
+        background: #444;
+      }
+
+      th {
+        background: #0056b3;
+      }
+
+      .add-category, .add-product, .remove-product {
+        border-radius: 8px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -153,7 +180,7 @@
       card.className = "category-card";
       card.id = `category-${categoryCount}`;
       card.innerHTML = `
-        <h2>Category ${categoryCount}</h2>
+        <h2 onclick="toggleCategory(${categoryCount})">Category ${categoryCount}</h2>
         <table>
           <thead>
             <tr>
@@ -174,6 +201,11 @@
 
       container.appendChild(card);
       addRow(card.querySelector(".add-product"));
+    }
+
+    function toggleCategory(id) {
+      const card = document.getElementById(`category-${id}`);
+      card.classList.toggle("open");
     }
 
     function addRow(button) {
