@@ -173,7 +173,6 @@
 
   tbody, tr, td {
     display: block;
-    width: 100%;
   }
 
   tr {
@@ -184,10 +183,15 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   }
 
+  td[data-label="No."] {
+    justify-content: center;
+    font-weight: bold;
+  }
+
   td {
     display: flex;
     justify-content: space-between;
-    padding: 0.4rem 0;
+    padding: 0.4rem;
   }
 
   td::before {
