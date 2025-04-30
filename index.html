@@ -29,9 +29,7 @@
       --color-button-secondary: #3ddc84;
       --color-button-danger: #ff6b6b;
       --color-button-dark: #f8f9fa;
-      --color-best-dark: #244030;
-      --color-collapse-dark: #888;
-      --color-free-dark: #665c00;
+      --color-collapse-dark: #14886c;
     }
 
     body {
@@ -163,6 +161,12 @@
     }
 
     @media (max-width: 600px) {
+      .category-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
       table {
         display: block;
         overflow-x: auto;
@@ -186,10 +190,6 @@
         flex-direction: column;
         align-items: flex-start;
         padding: 0.4rem;
-      }
-
-      td input, td select {
-        width: 100%;
       }
 
       td::before {
