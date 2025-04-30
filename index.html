@@ -6,25 +6,25 @@
   <title>CP Calculator</title>
   <style>
     :root {
-      --color-bg: #f9f9f9;
-      --color-text: #222;
+      --color-bg: #f2f2f2;
+      --color-text: #333;
       --color-card: #ffffff;
       --color-button-primary: #007bff;
       --color-button-secondary: #28a745;
       --color-button-danger: #dc3545;
-      --color-button-dark: #6c757d;
-      --color-best-light: #d1f7c4;
+      --color-button-dark: #343a40;
+      --color-best-light: #d4edda;
+      --color-best-dark: #30543e;
     }
 
     body.dark {
       --color-bg: #121212;
       --color-text: #f2f2f2;
       --color-card: #1e1e1e;
-      --color-button-primary: #66b2ff;
-      --color-button-secondary: #40c463;
+      --color-button-primary: #339aff;
+      --color-button-secondary: #3ddc84;
       --color-button-danger: #ff6b6b;
-      --color-button-dark: #adb5bd;
-      --color-best-light: #30543e;
+      --color-button-dark: #f8f9fa;
     }
 
     body {
@@ -33,10 +33,18 @@
       padding: 1rem;
       background: var(--color-bg);
       color: var(--color-text);
+      transition: background 0.3s, color 0.3s;
     }
 
     h1 {
       text-align: center;
+      margin-right: 3rem;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .container {
@@ -50,24 +58,17 @@
       padding: 1rem;
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: background 0.3s;
     }
 
     .category-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      cursor: pointer;
     }
 
     .category-header h2 {
       margin: 0;
-    }
-
-    .collapse-btn {
-      background: none;
-      border: none;
-      color: var(--color-button-dark);
-      cursor: pointer;
     }
 
     table {
@@ -101,6 +102,10 @@
       background-color: var(--color-best-light);
     }
 
+    body.dark .best {
+      background-color: var(--color-best-dark);
+    }
+
     .button-bar {
       margin-top: 1rem;
       display: flex;
@@ -119,6 +124,7 @@
 
     .add-category-btn {
       background: var(--color-button-secondary);
+      width: 100%;
     }
 
     .add-product-btn {
@@ -129,44 +135,57 @@
       background: var(--color-button-danger);
     }
 
-    .toggle-mode-btn {
+    .collapse-btn {
       background: var(--color-button-dark);
+      color: var(--color-text);
+    }
+
+    .toggle-mode-btn {
+      background: gray;
     }
 
     @media (max-width: 600px) {
-      table, thead, tbody, th, td, tr {
+      table {
         display: block;
       }
 
-      thead tr { display: none; }
+      thead {
+        display: none;
+      }
 
       tr {
+        display: grid;
+        grid-template-columns: 1fr;
         margin-bottom: 1rem;
-        padding: 0.5rem;
         border: 1px solid #ccc;
         border-radius: 5px;
+        padding: 0.5rem;
       }
 
       td {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         padding: 0.4rem;
       }
 
       td::before {
         content: attr(data-label);
         font-weight: bold;
+        margin-right: 1rem;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>CP Calculator (性价比)</h1>
+    <div class="top-bar">
+      <h1>CP Calculator (性价比)</h1>
+      <button class="toggle-mode-btn" onclick="toggleMode()">Dark Mode</button>
+    </div>
     <div id="categoriesContainer"></div>
     <div class="button-bar">
       <button class="add-category-btn" onclick="addCategory()">Add Category</button>
-      <button class="toggle-mode-btn" onclick="toggleMode()">Toggle Mode</button>
     </div>
   </div>
 
@@ -175,6 +194,7 @@
 
     function toggleMode() {
       document.body.classList.toggle('dark');
+      document.querySelector('.toggle-mode-btn').textContent = document.body.classList.contains('dark') ? 'Bright Mode' : 'Dark Mode';
     }
 
     function addCategory() {
@@ -184,9 +204,9 @@
       wrapper.id = `category-${categoryCount}`;
 
       wrapper.innerHTML = `
-        <div class="category-header" onclick="toggleCollapse(this)">
+        <div class="category-header">
           <h2>Category ${categoryCount}</h2>
-          <span class="collapse-btn">Collapse</span>
+          <button class="collapse-btn" onclick="toggleCollapse(this)">Collapse</button>
         </div>
         <div class="table-container">
           <table>
@@ -198,7 +218,7 @@
                 <th>Unit</th>
                 <th>Unit Type</th>
                 <th>Value</th>
-                <th>Remove</th>
+                <th></th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -216,8 +236,9 @@
     function addRow(button) {
       const tbody = button.closest(".category-card").querySelector("tbody");
       const row = document.createElement("tr");
+
       row.innerHTML = `
-        <td data-label="#" class="drag-handle">&#x2630;</td>
+        <td data-label="#" class="drag-handle" draggable="true">⇅</td>
         <td data-label="Product"><input type="text" /></td>
         <td data-label="Price"><input type="number" min="0" step="0.01" /></td>
         <td data-label="Unit"><input type="number" min="0.01" step="0.01" /></td>
@@ -235,19 +256,14 @@
         <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>
       `;
 
+      tbody.appendChild(row);
+
       row.querySelectorAll("input, select").forEach(el => {
         el.addEventListener("input", () => updateValues(tbody));
       });
 
-      row.querySelector(".drag-handle").style.cursor = "move";
-      row.setAttribute("draggable", true);
-
-      tbody.appendChild(row);
-      updateValues(tbody);
       enableDrag(tbody);
-
-      // Scroll into view on mobile
-      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      updateValues(tbody);
     }
 
     function removeRow(button) {
@@ -255,60 +271,75 @@
       const tbody = row.parentElement;
       row.remove();
       updateValues(tbody);
+
+      if (!tbody.children.length) {
+        const card = tbody.closest(".category-card");
+        card.remove();
+      }
     }
 
     function updateValues(tbody) {
       const rows = Array.from(tbody.querySelectorAll("tr"));
+      let minValue = Infinity;
+
       rows.forEach((row, index) => {
-        row.classList.remove("best");
         const price = parseFloat(row.cells[2].querySelector("input").value);
         const unit = parseFloat(row.cells[3].querySelector("input").value);
         const unitType = row.cells[4].querySelector("select").value;
         const valueCell = row.querySelector(".valueCell");
 
+        row.classList.remove("best");
+
+        let value = null;
         if (!isNaN(price) && !isNaN(unit) && unit > 0) {
-          const value = price / unit;
-          row.dataset.value = value;
+          value = price / unit;
           valueCell.textContent = `${value.toFixed(4)} / ${unitType}`;
         } else {
-          row.dataset.value = "";
           valueCell.textContent = "-";
         }
+
+        row.dataset.value = value;
       });
 
-      const validRows = rows.filter(r => r.dataset.value !== "");
+      const validRows = rows.filter(row => row.dataset.value !== "null");
       if (!validRows.length) return;
-      const min = Math.min(...validRows.map(r => parseFloat(r.dataset.value)));
-      validRows.forEach(r => {
-        if (parseFloat(r.dataset.value) === min) r.classList.add("best");
+
+      const min = Math.min(...validRows.map(row => parseFloat(row.dataset.value)));
+      validRows.forEach(row => {
+        if (parseFloat(row.dataset.value) === min) {
+          row.classList.add("best");
+        }
       });
     }
 
-    function toggleCollapse(header) {
-      const container = header.closest(".category-card");
+    function toggleCollapse(button) {
+      const container = button.closest(".category-card");
       const tableSection = container.querySelector(".table-container");
-      const label = header.querySelector(".collapse-btn");
+
       if (tableSection.style.display === "none") {
         tableSection.style.display = "block";
-        label.textContent = "Collapse";
+        button.textContent = "Collapse";
       } else {
         tableSection.style.display = "none";
-        label.textContent = "Expand";
+        button.textContent = "Expand";
       }
     }
 
     function enableDrag(tbody) {
-      let draggingRow;
-      tbody.querySelectorAll("tr").forEach(row => {
-        row.ondragstart = (e) => {
-          draggingRow = row;
-          e.dataTransfer.effectAllowed = "move";
-        };
+      let draggingRow = null;
 
-        row.ondragover = (e) => {
+      tbody.querySelectorAll(".drag-handle").forEach(handle => {
+        handle.addEventListener("dragstart", (e) => {
+          draggingRow = e.target.closest("tr");
+          e.dataTransfer.effectAllowed = "move";
+        });
+      });
+
+      tbody.querySelectorAll("tr").forEach(row => {
+        row.addEventListener("dragover", (e) => {
           e.preventDefault();
           const target = e.target.closest("tr");
-          if (target && target !== draggingRow) {
+          if (target && target !== draggingRow && target.parentNode === draggingRow.parentNode) {
             const rect = target.getBoundingClientRect();
             const offset = rect.y + rect.height / 2;
             if (e.clientY > offset) {
@@ -317,17 +348,17 @@
               target.before(draggingRow);
             }
           }
-        };
+        });
 
-        row.ondragend = () => {
+        row.addEventListener("dragend", () => {
           updateValues(tbody);
-        };
+        });
       });
     }
 
-    // System dark mode auto detection
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       document.body.classList.add('dark');
+      document.querySelector('.toggle-mode-btn').textContent = 'Bright Mode';
     }
 
     addCategory();
