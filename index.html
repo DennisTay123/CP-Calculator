@@ -1,95 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CP Calculator</title>
   <style>
     :root {
-      --bg-color: #f2f2f2;
-      --text-color: #333;
-      --card-bg: white;
-      --button-bg: #007bff;
-      --button-hover: #0056b3;
-      --table-head-bg: #007bff;
-      --table-head-color: white;
+      --light-bg: #f2f2f2;
+      --light-text: #333;
+      --light-table-bg: white;
+      --dark-bg: #121212;
+      --dark-text: #e0e0e0;
+      --dark-table-bg: #1e1e1e;
+
+      --best-light: #d4edda;
+      --best-dark: #275f36;
+
+      --btn-add: #007bff;
+      --btn-remove: #dc3545;
+      --btn-toggle: #17a2b8;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #121212;
-        --text-color: #e0e0e0;
-        --card-bg: #1e1e1e;
-        --button-bg: #1a73e8;
-        --button-hover: #4285f4;
-        --table-head-bg: #333;
-        --table-head-color: #fff;
-      }
+    [data-theme="dark"] body {
+      background: var(--dark-bg);
+      color: var(--dark-text);
+    }
+
+    [data-theme="dark"] .container,
+    [data-theme="dark"] table {
+      background-color: var(--dark-table-bg);
     }
 
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 1rem;
-      background: var(--bg-color);
-      color: var(--text-color);
+      background: var(--light-bg);
+      color: var(--light-text);
+      transition: all 0.3s ease;
     }
 
     h1 {
       text-align: center;
-      color: var(--text-color);
     }
 
     .container {
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    .category-wrapper {
-      margin-bottom: 2rem;
-      background: var(--card-bg);
+      max-width: 900px;
+      margin: 1rem auto;
       padding: 1rem;
       border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      background: var(--light-table-bg);
+    }
+
+    .category-container {
+      margin-bottom: 2rem;
     }
 
     .category-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-    }
-
-    .category-header h2 {
-      font-size: 1.2rem;
-      margin: 0;
-      color: var(--text-color);
-    }
-
-    .category-content {
       margin-top: 1rem;
     }
 
-    table {
+    .category table {
       width: 100%;
       border-collapse: collapse;
-      background: var(--card-bg);
-      color: var(--text-color);
     }
 
     th, td {
-      border: 1px solid #8884;
+      border: 1px solid #ddd;
       padding: 0.5rem;
       text-align: center;
     }
 
     th {
-      background: var(--table-head-bg);
-      color: var(--table-head-color);
+      background: #007bff;
+      color: white;
     }
 
     td input, td select {
@@ -97,41 +85,47 @@
       padding: 0.3rem;
       font-size: 0.9rem;
       box-sizing: border-box;
-      background: transparent;
-      color: var(--text-color);
-      border: 1px solid #ccc;
     }
 
     .valueCell {
       font-weight: bold;
     }
 
-    .best {
-      background-color: #2e7d32 !important;
-      color: #fff;
+    .best[data-theme="light"] {
+      background-color: var(--best-light) !important;
+    }
+
+    .best[data-theme="dark"] {
+      background-color: var(--best-dark) !important;
     }
 
     .button-bar {
       margin-top: 1rem;
       display: flex;
       gap: 1rem;
-      justify-content: flex-start;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     button {
       padding: 0.5rem 1rem;
       font-size: 1rem;
-      background: var(--button-bg);
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: background 0.2s;
     }
 
-    button:hover {
-      background: var(--button-hover);
+    .btn-add {
+      background: var(--btn-add);
+    }
+
+    .btn-remove {
+      background: var(--btn-remove);
+    }
+
+    .btn-toggle {
+      background: var(--btn-toggle);
     }
 
     @media (max-width: 600px) {
@@ -144,16 +138,17 @@
       }
 
       tr {
+        background: inherit;
         border: 1px solid #ccc;
         margin-bottom: 1rem;
+        padding: 0.5rem;
         border-radius: 5px;
-        background: var(--card-bg);
       }
 
       td {
         display: flex;
         justify-content: space-between;
-        padding: 0.5rem;
+        padding: 0.4rem;
         border: none;
         border-bottom: 1px solid #eee;
       }
@@ -161,6 +156,7 @@
       td::before {
         content: attr(data-label);
         font-weight: bold;
+        flex: 1;
       }
 
       td input, td select {
@@ -170,74 +166,100 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>CP Calculator (性价比)</h1>
-
-    <div id="categoriesContainer"></div>
-
-    <div class="button-bar">
-      <button onclick="addCategory()">Add Category</button>
-    </div>
+  <h1>CP Calculator (性价比)</h1>
+  <div class="button-bar">
+    <button class="btn-toggle" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
+  </div>
+  <div id="categoriesContainer"></div>
+  <div class="button-bar">
+    <button class="btn-add" onclick="addCategory()">Add Category</button>
   </div>
 
   <script>
     let categoryCount = 0;
 
+    function getTheme() {
+      return document.documentElement.getAttribute('data-theme');
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+
+    function toggleTheme() {
+      const current = getTheme();
+      const next = current === 'dark' ? 'light' : 'dark';
+      setTheme(next);
+    }
+
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme('dark');
+    } else {
+      setTheme('light');
+    }
+
     function addCategory() {
       categoryCount++;
       const container = document.getElementById("categoriesContainer");
-
       const wrapper = document.createElement("div");
-      wrapper.className = "category-wrapper";
-      wrapper.id = `category-${categoryCount}`;
+      wrapper.className = "category-container container";
 
-      const header = document.createElement("div");
-      header.className = "category-header";
-      header.innerHTML = `<h2>Category ${categoryCount}</h2><button onclick="toggleCollapse(this)">Collapse</button>`;
+      const section = document.createElement("div");
+      section.className = "category";
+      section.id = `category-${categoryCount}`;
 
-      const content = document.createElement("div");
-      content.className = "category-content";
-      content.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Product</th>
-              <th>Price</th>
-              <th>Unit</th>
-              <th>Unit Type</th>
-              <th>Value</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="button-bar">
-          <button onclick="addRow(this)">Add Product</button>
+      const collapseId = `collapse-${categoryCount}`;
+      section.innerHTML = `
+        <div class="category-header">
+          <h2>Category ${categoryCount}</h2>
+          <button class="btn-remove" onclick="removeCategory(this)">Remove Category</button>
+        </div>
+        <button onclick="toggleCollapse('${collapseId}')">Collapse / Expand</button>
+        <div id="${collapseId}">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Unit</th>
+                <th>Unit Type</th>
+                <th>Value</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="button-bar">
+            <button class="btn-add" onclick="addRow(this)">Add Product</button>
+          </div>
         </div>
       `;
 
-      wrapper.appendChild(header);
-      wrapper.appendChild(content);
+      wrapper.appendChild(section);
       container.appendChild(wrapper);
-      addRow(content.querySelector("button"));
+      addRow(section.querySelector("button.btn-add"));
     }
 
-    function toggleCollapse(btn) {
-      const content = btn.closest(".category-wrapper").querySelector(".category-content");
-      const isCollapsed = content.style.display === "none";
-      content.style.display = isCollapsed ? "block" : "none";
-      btn.textContent = isCollapsed ? "Collapse" : "Expand";
+    function toggleCollapse(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function removeCategory(btn) {
+      const wrapper = btn.closest(".category-container");
+      wrapper.remove();
     }
 
     function addRow(button) {
-      const tbody = button.closest(".category-content").querySelector("tbody");
-
+      const tbody = button.closest(".category").querySelector("tbody");
       const row = document.createElement("tr");
       row.setAttribute("draggable", true);
+
+      const index = tbody.rows.length + 1;
       row.innerHTML = `
-        <td data-label="#">-</td>
-        <td data-label="Product"><input type="text" /></td>
+        <td data-label="#">${index}</td>
+        <td data-label="Product"><input type="text" placeholder="e.g. Apple" /></td>
         <td data-label="Price"><input type="number" min="0" step="0.01" /></td>
         <td data-label="Unit"><input type="number" min="0.01" step="0.01" /></td>
         <td data-label="Unit Type">
@@ -251,7 +273,7 @@
           </select>
         </td>
         <td data-label="Value" class="valueCell">-</td>
-        <td><button onclick="removeRow(this)">Remove</button></td>
+        <td><button class="btn-remove" onclick="removeRow(this)">Remove</button></td>
       `;
 
       tbody.appendChild(row);
@@ -271,8 +293,8 @@
       row.remove();
       updateValues(tbody);
 
-      if (tbody.children.length === 0) {
-        const category = tbody.closest(".category-wrapper");
+      if (tbody.rows.length === 0) {
+        const category = tbody.closest(".category-container");
         category.remove();
       }
     }
@@ -282,9 +304,8 @@
       let minValue = Infinity;
       let bestRow = null;
 
-      rows.forEach((row, index) => {
-        row.cells[0].textContent = index + 1;
-
+      rows.forEach((row, i) => {
+        row.cells[0].textContent = i + 1;
         const price = parseFloat(row.cells[2].querySelector("input").value);
         const unit = parseFloat(row.cells[3].querySelector("input").value);
         const unitType = row.cells[4].querySelector("select").value;
@@ -304,24 +325,29 @@
         row.classList.remove("best");
       });
 
-      if (bestRow) bestRow.classList.add("best");
+      if (bestRow) {
+        bestRow.classList.add("best");
+        bestRow.setAttribute("data-theme", getTheme());
+      }
     }
 
     function enableDrag(tbody) {
       let draggingRow;
 
       tbody.querySelectorAll("tr").forEach(row => {
-        row.ondragstart = (e) => {
+        row.ondragstart = e => {
           draggingRow = row;
           e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/html", row.innerHTML);
         };
 
-        row.ondragover = (e) => {
+        row.ondragover = e => {
           e.preventDefault();
           const target = e.target.closest("tr");
           if (target && target !== draggingRow) {
-            const offset = target.getBoundingClientRect().y + target.offsetHeight / 2;
-            if (e.clientY > offset) {
+            const bounding = target.getBoundingClientRect();
+            const offset = bounding.y + bounding.height / 2;
+            if (e.clientY - offset > 0) {
               target.after(draggingRow);
             } else {
               target.before(draggingRow);
@@ -333,7 +359,6 @@
       });
     }
 
-    // Initialize with one category
     addCategory();
   </script>
 </body>
