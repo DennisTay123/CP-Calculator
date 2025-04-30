@@ -155,7 +155,7 @@
     }
 
     body.dark .collapse-btn {
-      background: var(--color-collapse-dark);
+      background: var(--color-collapse-light);
     }
 
     .toggle-mode-btn {
@@ -212,7 +212,7 @@
 <body>
   <div class="container">
     <div class="top-bar">
-      <h1>CP Calculator (性价比)</h1>
+      <h1>CP Calculator</h1>
       <button class="toggle-mode-btn" onclick="toggleMode()">Dark Mode</button>
     </div>
     <div id="categoriesContainer"></div>
@@ -264,7 +264,7 @@
       document.getElementById("categoriesContainer").appendChild(wrapper);
       addRow(wrapper.querySelector(".add-product-btn"));
     
-      // ⬇️ Scroll into view
+      // Scroll into view
       wrapper.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -304,7 +304,7 @@
     
       updateValues(tbody);
     
-      // ⬇️ Scroll new row into view
+      // Scroll new row into view
       row.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
