@@ -234,7 +234,7 @@
       const wrapper = document.createElement("div");
       wrapper.className = "category-card";
       wrapper.id = `category-${categoryCount}`;
-
+    
       wrapper.innerHTML = `
         <div class="category-header">
           <h2>Category ${categoryCount}</h2>
@@ -260,10 +260,14 @@
           </div>
         </div>
       `;
-
+    
       document.getElementById("categoriesContainer").appendChild(wrapper);
       addRow(wrapper.querySelector(".add-product-btn"));
+    
+      // ⬇️ Scroll into view
+      wrapper.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+
 
     function parseInput(value) {
       return parseFloat(value.replace(',', '.'));
@@ -272,7 +276,7 @@
     function addRow(button) {
       const tbody = button.closest(".category-card").querySelector("tbody");
       const row = document.createElement("tr");
-
+    
       row.innerHTML = `
         <td data-label="#">${tbody.children.length + 1}</td>
         <td data-label="Product"><input type="text" /></td>
@@ -291,14 +295,17 @@
         <td data-label="CP Value" class="valueCell">-</td>
         <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>
       `;
-
+    
       tbody.appendChild(row);
-
+    
       row.querySelectorAll("input, select").forEach(el => {
         el.addEventListener("input", () => updateValues(tbody));
       });
-
+    
       updateValues(tbody);
+    
+      // ⬇️ Scroll new row into view
+      row.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     function removeRow(button) {
