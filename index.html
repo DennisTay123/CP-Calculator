@@ -137,7 +137,10 @@
 
     .collapse-btn {
       background: var(--color-button-dark);
-      color: var(--color-text);
+    }
+
+    body.dark .collapse-btn {
+      background: var(--color-button-secondary);
     }
 
     .toggle-mode-btn {
@@ -147,6 +150,7 @@
     @media (max-width: 600px) {
       table {
         display: block;
+        overflow-x: auto;
       }
 
       thead {
@@ -332,6 +336,7 @@
         handle.addEventListener("dragstart", (e) => {
           draggingRow = e.target.closest("tr");
           e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData('text/plain', '');
         });
       });
 
@@ -346,6 +351,14 @@
               target.after(draggingRow);
             } else {
               target.before(draggingRow);
+            }
+
+            // Auto-scroll
+            const scrollThreshold = 50;
+            if (e.clientY < scrollThreshold) {
+              window.scrollBy(0, -10);
+            } else if (window.innerHeight - e.clientY < scrollThreshold) {
+              window.scrollBy(0, 10);
             }
           }
         });
