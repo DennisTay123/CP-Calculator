@@ -9,39 +9,47 @@
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 1rem;
-      background: #f9f9f9;
+      background: #f2f2f2;
+      transition: background 0.3s, color 0.3s;
     }
 
     h1 {
       text-align: center;
-      color: #2c3e50;
-      margin-bottom: 2rem;
+      color: #333;
     }
 
     .container {
-      max-width: 960px;
+      max-width: 900px;
       margin: auto;
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
     .category {
       margin-bottom: 2rem;
-      background: #fff;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
-      transition: box-shadow 0.3s;
-    }
-
-    .category:hover {
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
     }
 
     .category h2 {
-      font-size: 1.3rem;
-      color: #34495e;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 0.5rem;
+      margin: 0;
+      padding: 0.75rem 1rem;
+      font-size: 1.1rem;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .category h2 button {
+      background: none;
+      border: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #007bff;
     }
 
     table {
@@ -53,11 +61,12 @@
       border: 1px solid #ddd;
       padding: 0.5rem;
       text-align: center;
+      vertical-align: middle;
     }
 
     th {
-      background-color: #3498db;
-      color: #fff;
+      background: #007bff;
+      color: white;
     }
 
     td input, td select {
@@ -69,60 +78,37 @@
 
     .valueCell {
       font-weight: bold;
-      color: #2c3e50;
+      color: #333;
     }
 
     .best {
-      background-color: #dff0d8 !important;
+      background-color: #d4edda !important;
     }
 
     .button-bar {
       margin-top: 1rem;
+      text-align: center;
       display: flex;
       gap: 1rem;
-      justify-content: flex-end;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
-    button {
+    .btn {
       padding: 0.5rem 1rem;
-      font-size: 0.95rem;
+      font-size: 1rem;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.2s;
     }
 
-    .btn-add-product {
-      background-color: #27ae60;
-      color: #fff;
-    }
+    .btn-add-category { background: #007bff; color: white; }
+    .btn-add-product { background: #28a745; color: white; }
+    .btn-remove { background: #dc3545; color: white; }
 
-    .btn-add-product:hover {
-      background-color: #1e8449;
-    }
-
-    .btn-remove {
-      background-color: #e74c3c;
-      color: #fff;
-    }
-
-    .btn-remove:hover {
-      background-color: #c0392b;
-    }
-
-    .btn-add-category {
-      background-color: #2980b9;
-      color: #fff;
-      display: block;
-      width: 100%;
-      max-width: 250px;
-      margin: 2rem auto 0;
-      text-align: center;
-    }
-
-    .btn-add-category:hover {
-      background-color: #1c6692;
+    .btn:hover {
+      opacity: 0.9;
     }
 
     @media (max-width: 600px) {
@@ -135,34 +121,82 @@
       }
 
       tr {
+        background: #fff;
+        border: 1px solid #ccc;
         margin-bottom: 1rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
         padding: 0.5rem;
+        border-radius: 5px;
       }
 
       td {
         display: flex;
         justify-content: space-between;
         padding: 0.4rem;
+        border: none;
+        border-bottom: 1px solid #eee;
       }
 
       td::before {
         content: attr(data-label);
         font-weight: bold;
-        margin-right: 1rem;
+        flex: 1;
       }
 
       td input, td select {
         width: 60%;
       }
 
-      td:last-child {
-        justify-content: flex-end;
-      }
-
       td:last-child::before {
         content: '';
+      }
+
+      td:last-child {
+        justify-content: flex-end;
+        padding-right: 1rem;
+      }
+    }
+
+    .drag-handle {
+      cursor: grab;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #121212;
+        color: #eee;
+      }
+
+      .container {
+        background: #1e1e1e;
+        color: #ccc;
+      }
+
+      th {
+        background: #444;
+        color: #fff;
+      }
+
+      .best {
+        background-color: #2e7d32 !important;
+      }
+
+      input, select {
+        background: #2a2a2a;
+        color: #fff;
+        border: 1px solid #555;
+      }
+
+      button, .btn {
+        background: #333;
+        color: #fff;
+      }
+
+      button:hover, .btn:hover {
+        background: #555;
+      }
+
+      .category h2 {
+        background: #222;
       }
     }
   </style>
@@ -170,8 +204,12 @@
 <body>
   <div class="container">
     <h1>CP Calculator (性价比)</h1>
+
     <div id="categoriesContainer"></div>
-    <button class="btn-add-category" onclick="addCategory()">Add Category</button>
+
+    <div class="button-bar" id="bottomButtons">
+      <button class="btn btn-add-category" onclick="addCategory()">Add Category</button>
+    </div>
   </div>
 
   <script>
@@ -185,10 +223,14 @@
       section.className = "category";
       section.id = `category-${categoryCount}`;
       section.innerHTML = `
-        <h2>Category ${categoryCount}</h2>
+        <h2>
+          Category ${categoryCount}
+          <button onclick="toggleCollapse(this)">Collapse</button>
+        </h2>
         <table>
           <thead>
             <tr>
+              <th>No.</th>
               <th>Product</th>
               <th>Price</th>
               <th>Unit</th>
@@ -200,12 +242,13 @@
           <tbody></tbody>
         </table>
         <div class="button-bar">
-          <button class="btn-add-product" onclick="addRow(this)">Add Product</button>
+          <button class="btn btn-add-product" onclick="addRow(this)">Add Product</button>
         </div>
       `;
 
       container.appendChild(section);
-      addRow(section.querySelector(".btn-add-product"));
+      addRow(section.querySelector("button"));
+      document.getElementById("bottomButtons").scrollIntoView({ behavior: "smooth" });
     }
 
     function addRow(button) {
@@ -214,6 +257,7 @@
       const row = document.createElement("tr");
       row.setAttribute("draggable", true);
       row.innerHTML = `
+        <td data-label="No." class="seq-num">1</td>
         <td data-label="Product"><input type="text" placeholder="e.g. Apple" /></td>
         <td data-label="Price"><input type="number" min="0" step="0.01" /></td>
         <td data-label="Unit"><input type="number" min="0.01" step="0.01" /></td>
@@ -228,7 +272,7 @@
           </select>
         </td>
         <td data-label="Value" class="valueCell">-</td>
-        <td><button class="btn-remove" onclick="removeRow(this)">Remove</button></td>
+        <td><button class="btn btn-remove" onclick="removeRow(this)">X</button></td>
       `;
 
       tbody.appendChild(row);
@@ -247,6 +291,11 @@
       const tbody = row.parentElement;
       row.remove();
       updateValues(tbody);
+
+      if (tbody.rows.length === 0) {
+        const category = tbody.closest(".category");
+        category.remove();
+      }
     }
 
     function updateValues(tbody) {
@@ -254,10 +303,11 @@
       let minValue = Infinity;
       let bestRow = null;
 
-      rows.forEach(row => {
-        const price = parseFloat(row.cells[1].querySelector("input").value);
-        const unit = parseFloat(row.cells[2].querySelector("input").value);
-        const unitType = row.cells[3].querySelector("select").value;
+      rows.forEach((row, index) => {
+        row.querySelector(".seq-num").textContent = index + 1;
+        const price = parseFloat(row.cells[2].querySelector("input").value);
+        const unit = parseFloat(row.cells[3].querySelector("input").value);
+        const unitType = row.cells[4].querySelector("select").value;
         const valueCell = row.querySelector(".valueCell");
 
         let valueText = "-";
@@ -277,8 +327,18 @@
       if (bestRow) bestRow.classList.add("best");
     }
 
+    function toggleCollapse(button) {
+      const category = button.closest(".category");
+      const table = category.querySelector("table");
+      const bar = category.querySelector(".button-bar");
+      const collapsed = table.style.display === "none";
+      table.style.display = collapsed ? "" : "none";
+      bar.style.display = collapsed ? "" : "none";
+      button.textContent = collapsed ? "Collapse" : "Expand";
+    }
+
     function enableDrag(tbody) {
-      let draggingRow = null;
+      let draggingRow;
 
       tbody.querySelectorAll("tr").forEach(row => {
         row.ondragstart = (e) => {
@@ -289,10 +349,10 @@
         row.ondragover = (e) => {
           e.preventDefault();
           const target = e.target.closest("tr");
-          if (target && target !== draggingRow && target.parentElement === draggingRow.parentElement) {
+          if (target && target !== draggingRow) {
             const bounding = target.getBoundingClientRect();
             const offset = bounding.y + bounding.height / 2;
-            if (e.clientY > offset) {
+            if (e.clientY - offset > 0) {
               target.after(draggingRow);
             } else {
               target.before(draggingRow);
@@ -306,7 +366,16 @@
       });
     }
 
-    // Auto-load the first category
+    document.addEventListener('dragover', (e) => {
+      const scrollZone = 80;
+      if (e.clientY < scrollZone) {
+        window.scrollBy(0, -10);
+      } else if (window.innerHeight - e.clientY < scrollZone) {
+        window.scrollBy(0, 10);
+      }
+    });
+
+    // Add initial category
     addCategory();
   </script>
 </body>
